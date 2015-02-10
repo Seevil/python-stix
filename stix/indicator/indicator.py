@@ -3,7 +3,8 @@
 
 import stix
 import stix.utils
-from stix.utils import dates
+import stix.utils.caches as caches
+import stix.utils.dates as dates
 from stix.common import (
     Identity, InformationSource, StructuredText, VocabString, Confidence,
     RelatedTTP, Statement
@@ -156,7 +157,7 @@ class RelatedIndicators(GenericRelationshipList):
             related_indicators = []
         super(RelatedIndicators, self).__init__(scope, *related_indicators)
 
-class Indicator(stix.Entity):
+class Indicator(stix.Entity, caches.Cachable):
     """Implementation of the STIX ``IndicatorType``.
 
     Args:
@@ -235,6 +236,9 @@ class Indicator(stix.Entity):
         else:
             self._id = value
             self.idref = None
+
+            # Update Indicator instance cache
+            self._cache_put()
     
     @property
     def version(self):
